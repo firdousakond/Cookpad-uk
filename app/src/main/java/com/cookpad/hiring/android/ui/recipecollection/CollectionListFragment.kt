@@ -11,9 +11,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cookpad.hiring.android.R
 import com.cookpad.hiring.android.databinding.FragmentCollectionListBinding
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import java.time.Duration
 
 @AndroidEntryPoint
 class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
@@ -48,11 +50,10 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
                         }
                         CollectionListViewState.Error -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
-                            Toast.makeText(
-                                requireContext(),
-                                R.string.generic_error_message,
-                                Toast.LENGTH_SHORT
-                            ).show()
+
+                            Snackbar.make(binding.root, R.string.generic_error_message, Snackbar.LENGTH_INDEFINITE)
+                                .setAction(R.string.retry) { viewModel.refresh() }
+                                .show()
                         }
                         CollectionListViewState.Loading -> {
                             binding.loadingCircularProgressIndicator.visibility = View.VISIBLE

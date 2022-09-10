@@ -14,6 +14,8 @@ class CollectionListViewHolder(private val binding: CollectionListItemBinding) :
     fun bind(item: Collection) {
         Glide.with(binding.root.context)
             .load(item.previewImageUrls.firstOrNull())
+            .placeholder(R.drawable.ic_baseline_image_24)
+            .error(R.drawable.ic_baseline_image_24)
             .centerCrop()
             .into(binding.CollectionImageView)
 
