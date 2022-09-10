@@ -2,12 +2,13 @@ package com.cookpad.hiring.android.ui.recipecollection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.cookpad.hiring.android.data.CollectionListRepository
+import com.cookpad.hiring.android.data.repository.CollectionListRepository
 import com.cookpad.hiring.android.data.entities.Collection
 import com.cookpad.hiring.android.ui.recipecollection.CollectionListViewState.Success
 import com.cookpad.hiring.android.ui.recipecollection.CollectionListViewState.Error
 import com.cookpad.hiring.android.ui.recipecollection.CollectionListViewState.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ class CollectionListViewModel @Inject constructor(private val repository: Collec
     private fun loadCollections() {
         _viewState.value = Loading
 
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO){
             runCatching {
                 repository.getCollectionList()
             }.onFailure {

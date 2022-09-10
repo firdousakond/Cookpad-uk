@@ -11,7 +11,7 @@ import com.cookpad.hiring.android.databinding.CollectionListItemBinding
 class CollectionListViewHolder(private val binding: CollectionListItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: Collection) {
+    fun bind(item: Collection, position: Int,callback: (Int) -> Unit) {
         Glide.with(binding.root.context)
             .load(item.previewImageUrls.firstOrNull())
             .placeholder(R.drawable.ic_baseline_image_24)
@@ -25,6 +25,20 @@ class CollectionListViewHolder(private val binding: CollectionListItemBinding) :
             R.string.collection_recipe_count,
             item.recipeCount.toString()
         )
+        setFavouriteImage(item.favourite)
+        binding.favouriteImageView.setOnClickListener {
+            callback.invoke(position)
+            item.favourite = item.favourite.not()
+            setFavouriteImage(item.favourite)
+        }
+    }
+
+    private fun setFavouriteImage(favourite: Boolean) {
+        if(favourite){
+            binding.favouriteImageView.setImageResource(R.drawable.ic_baseline_favorite_24)
+        }else{
+            binding.favouriteImageView.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+        }
     }
 
     companion object {

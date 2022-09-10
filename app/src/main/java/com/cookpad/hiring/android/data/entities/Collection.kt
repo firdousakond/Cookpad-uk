@@ -12,5 +12,6 @@ data class Collection(
     val title: String,
     val description: String,
     val recipeCount: Int,
-    val previewImageUrls: List<String> = emptyList()
+    val previewImageUrls: List<String> = emptyList(),
+    var favourite : Boolean
 )

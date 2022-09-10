@@ -38,4 +38,5 @@ object NetworkModule {
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
     }
+
 }

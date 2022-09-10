@@ -1,6 +1,6 @@
 package com.cookpad.hiring.android.ui.recipecollection
 
-import com.cookpad.hiring.android.data.CollectionListRepository
+import com.cookpad.hiring.android.data.repository.CollectionListRepository
 import com.cookpad.hiring.android.data.entities.Collection
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,7 +64,8 @@ class CollectionListViewModelTest {
             title = "title",
             description = "disc",
             recipeCount = 3,
-            previewImageUrls = listOf("urls")
+            previewImageUrls = listOf("urls"),
+            favourite = false
         )
         return listOf(element)
     }
