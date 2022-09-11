@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
     app:startDestination="@id/collectionListFragment">
 
     <fragment
         android:id="@+id/collectionListFragment"
         android:name="com.cookpad.hiring.android.ui.recipecollection.CollectionListFragment"
-        android:label="Recipe Collections" />
+        android:label="Recipe Collections"
+        tools:layout="@layout/fragment_collection_list"
+        >
+        <action
+            android:id="@+id/action_collectionListFragment_to_favListFragment"
+            app:destination="@id/favListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favListFragment"
+        android:name="com.cookpad.hiring.android.ui.favouriterecipe.FavListFragment"
+        android:label="Favourite Recipe"
+        tools:layout="@layout/fragment_fav_list"
+        />
+
 </navigation>

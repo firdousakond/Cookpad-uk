@@ -2,11 +2,8 @@ package com.cookpad.hiring.android.ui.recipecollection
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cookpad.hiring.android.data.Resource
 import com.cookpad.hiring.android.data.repository.CollectionListRepository
-import com.cookpad.hiring.android.data.entities.Collection
-import com.cookpad.hiring.android.ui.recipecollection.CollectionListViewState.Success
-import com.cookpad.hiring.android.ui.recipecollection.CollectionListViewState.Error
-import com.cookpad.hiring.android.ui.recipecollection.CollectionListViewState.Loading
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,8 +15,8 @@ import javax.inject.Inject
 class CollectionListViewModel @Inject constructor(private val repository: CollectionListRepository) :
     ViewModel() {
 
-    private val _viewState = MutableStateFlow<CollectionListViewState>(Success(emptyList()))
-    val viewState: StateFlow<CollectionListViewState> = _viewState
+    private val _viewState = MutableStateFlow<Resource>(Resource.Success(emptyList()))
+    val viewState: StateFlow<Resource> = _viewState
 
     init {
         loadCollections()
@@ -30,22 +27,16 @@ class CollectionListViewModel @Inject constructor(private val repository: Collec
     }
 
     private fun loadCollections() {
-        _viewState.value = Loading
+        _viewState.value = Resource.Loading
 
         viewModelScope.launch(Dispatchers.IO){
             runCatching {
                 repository.getCollectionList()
             }.onFailure {
-                _viewState.value = Error
+                _viewState.value = Resource.Error
             }.onSuccess { collection ->
-                _viewState.value = Success(collection)
+                _viewState.value = Resource.Success(collection)
             }
         }
     }
-}
-
-sealed class CollectionListViewState {
-    object Loading : CollectionListViewState()
-    object Error : CollectionListViewState()
-    data class Success(val collection: List<Collection>) : CollectionListViewState()
 }

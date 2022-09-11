@@ -1,4 +1,4 @@
-package com.cookpad.hiring.android.ui.recipecollection
+package com.cookpad.hiring.android.ui.favouriterecipe
 
 import android.os.Bundle
 import android.view.View
@@ -7,51 +7,40 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cookpad.hiring.android.R
 import com.cookpad.hiring.android.data.Resource
-import com.cookpad.hiring.android.databinding.FragmentCollectionListBinding
-import com.cookpad.hiring.android.ui.favouriterecipe.FavRecipeViewModel
+import com.cookpad.hiring.android.databinding.FragmentFavListBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
+class FavListFragment : Fragment(R.layout.fragment_fav_list) {
 
-    private lateinit var collectionListAdapter: CollectionListAdapter
-    private val viewModel: CollectionListViewModel by viewModels()
+    private lateinit var favRecipeAdapter: FavRecipeAdapter
     private val favViewModel: FavRecipeViewModel by viewModels()
 
-    private var _binding: FragmentCollectionListBinding? = null
+    private var _binding: FragmentFavListBinding? = null
     private val binding get() = _binding!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        _binding = FragmentCollectionListBinding.bind(view)
-
+        _binding = FragmentFavListBinding.bind(view)
         setUpRecyclerView()
-
-        binding.swipeToRefresh.apply {
-            setOnRefreshListener {
-                isRefreshing = false
-                viewModel.refresh()
-            }
-        }
         setupObserver()
+        favViewModel.getFavouriteRecipe()
     }
 
     private fun setupObserver() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.viewState.collect { viewState ->
+                favViewModel.favViewState.collectLatest { viewState ->
                     when (viewState) {
                         is Resource.Success -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
-                            collectionListAdapter.submitList(viewState.collection)
+                            favRecipeAdapter.submitList(viewState.collection)
                         }
                         Resource.Error -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
@@ -61,7 +50,7 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
                                 R.string.generic_error_message,
                                 Snackbar.LENGTH_INDEFINITE
                             )
-                                .setAction(R.string.retry) { viewModel.refresh() }
+                                .setAction(R.string.retry) { favViewModel.getFavouriteRecipe() }
                                 .show()
                         }
                         Resource.Loading -> {
@@ -74,11 +63,11 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
     }
 
     private fun setUpRecyclerView() {
-        binding.collectionList.apply {
-            collectionListAdapter = CollectionListAdapter { collection ->
+        binding.rvFavList.apply {
+            favRecipeAdapter = FavRecipeAdapter { collection ->
                 favViewModel.setFavouriteRecipe(collection.id, collection.favourite.not())
             }
-            adapter = collectionListAdapter
+            adapter = favRecipeAdapter
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
