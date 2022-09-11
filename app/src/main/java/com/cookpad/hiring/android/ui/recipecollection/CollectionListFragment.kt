@@ -1,10 +1,8 @@
 package com.cookpad.hiring.android.ui.recipecollection
 
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -25,21 +23,27 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
+class CollectionListFragment : Fragment() {
 
     private lateinit var collectionListAdapter: CollectionListAdapter
     private val viewModel: CollectionListViewModel by viewModels()
     private val favViewModel: FavRecipeViewModel by viewModels()
 
-    private var _binding: FragmentCollectionListBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentCollectionListBinding
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(inflater,R.layout.fragment_collection_list,container, false)
+        return binding.root
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        _binding = FragmentCollectionListBinding.bind(view)
         setUpRecyclerView()
-
         binding.swipeToRefresh.apply {
             setOnRefreshListener {
                 isRefreshing = false
@@ -92,12 +96,6 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
             layoutManager = LinearLayoutManager(requireContext())
         }
     }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)

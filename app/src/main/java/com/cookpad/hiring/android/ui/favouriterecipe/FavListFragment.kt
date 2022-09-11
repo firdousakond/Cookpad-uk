@@ -1,8 +1,10 @@
 package com.cookpad.hiring.android.ui.favouriterecipe
 
 import android.os.Bundle
-import android.view.Menu
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -21,19 +23,25 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class FavListFragment : Fragment(R.layout.fragment_fav_list) {
+class FavListFragment : Fragment() {
 
     private lateinit var favRecipeAdapter: FavRecipeAdapter
     private val favViewModel: FavRecipeViewModel by viewModels()
 
-    private var _binding: FragmentFavListBinding? = null
-    private val binding get() = _binding!!
+    private lateinit var binding: FragmentFavListBinding
     private var favRecipes: MutableList<Collection>? = null
 
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_fav_list, container, false)
+        return binding.root
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding = FragmentFavListBinding.bind(view)
         setUpRecyclerView()
         setupObserver()
         favViewModel.getFavouriteRecipe()
@@ -91,8 +99,4 @@ class FavListFragment : Fragment(R.layout.fragment_fav_list) {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
-    }
 }

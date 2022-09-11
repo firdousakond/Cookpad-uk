@@ -14,7 +14,8 @@ class CollectionListAdapter(private val callback: (Collection)->Unit) : ListAdap
     override fun onBindViewHolder(holder: CollectionListViewHolder, position: Int) {
         holder.bind(getItem(position), position){
             callback.invoke(getItem(it))
-            notifyItemChanged(position)
+            getItem(it).favourite = getItem(it).favourite.not()
+            notifyItemChanged(it)
         }
     }
 
