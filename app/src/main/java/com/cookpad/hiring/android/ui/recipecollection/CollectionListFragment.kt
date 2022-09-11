@@ -1,6 +1,9 @@
 package com.cookpad.hiring.android.ui.recipecollection
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -8,11 +11,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cookpad.hiring.android.R
 import com.cookpad.hiring.android.data.Resource
 import com.cookpad.hiring.android.databinding.FragmentCollectionListBinding
 import com.cookpad.hiring.android.ui.favouriterecipe.FavRecipeViewModel
+import com.cookpad.hiring.android.util.hide
+import com.cookpad.hiring.android.util.show
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -30,9 +36,8 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        setHasOptionsMenu(true)
         _binding = FragmentCollectionListBinding.bind(view)
-
         setUpRecyclerView()
 
         binding.swipeToRefresh.apply {
@@ -51,7 +56,12 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
                     when (viewState) {
                         is Resource.Success -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
-                            collectionListAdapter.submitList(viewState.collection)
+                            if (viewState.collection.isNotEmpty()) {
+                                collectionListAdapter.submitList(viewState.collection)
+                                binding.tvNoRecipe.hide()
+                            } else {
+                                binding.tvNoRecipe.show()
+                            }
                         }
                         Resource.Error -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
@@ -86,5 +96,24 @@ class CollectionListFragment : Fragment(R.layout.fragment_collection_list) {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.main_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.favourite) {
+            val action =
+                CollectionListFragmentDirections.actionCollectionListFragmentToFavListFragment()
+            findNavController().navigate(action)
+            return true
+        }
+        return NavigationUI.onNavDestinationSelected(
+            item,
+            findNavController()
+        ) || super.onOptionsItemSelected(item)
     }
 }

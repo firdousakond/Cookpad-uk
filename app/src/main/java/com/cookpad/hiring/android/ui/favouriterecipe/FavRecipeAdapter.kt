@@ -5,17 +5,22 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.cookpad.hiring.android.data.entities.Collection
 
-class FavRecipeAdapter(private val callback: (Collection)->Unit) : ListAdapter<Collection, FavRecipeViewHolder>(DIFF_CALLBACK) {
+class FavRecipeAdapter(private val callback: (Collection) -> Unit) :
+    ListAdapter<Collection, FavRecipeViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavRecipeViewHolder {
         return FavRecipeViewHolder.create(parent)
     }
 
     override fun onBindViewHolder(holder: FavRecipeViewHolder, position: Int) {
-        holder.bind(getItem(position), position){
+        holder.bind(getItem(position), position) {
             callback.invoke(getItem(it))
-            notifyItemRemoved(position)
+            notifyDataSetChanged()
         }
+    }
+
+    fun refreshList(favRecipes: MutableList<Collection>?) {
+        submitList(favRecipes)
     }
 
     companion object {
@@ -23,6 +28,7 @@ class FavRecipeAdapter(private val callback: (Collection)->Unit) : ListAdapter<C
             override fun areItemsTheSame(oldItem: Collection, newItem: Collection): Boolean {
                 return oldItem.id == newItem.id
             }
+
             override fun areContentsTheSame(oldItem: Collection, newItem: Collection): Boolean {
                 return oldItem == newItem
             }

@@ -1,6 +1,7 @@
 package com.cookpad.hiring.android.ui.favouriterecipe
 
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -10,7 +11,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cookpad.hiring.android.R
 import com.cookpad.hiring.android.data.Resource
+import com.cookpad.hiring.android.data.entities.Collection
 import com.cookpad.hiring.android.databinding.FragmentFavListBinding
+import com.cookpad.hiring.android.util.hide
+import com.cookpad.hiring.android.util.show
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -24,6 +28,8 @@ class FavListFragment : Fragment(R.layout.fragment_fav_list) {
 
     private var _binding: FragmentFavListBinding? = null
     private val binding get() = _binding!!
+    private var favRecipes: MutableList<Collection>? = null
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,7 +46,8 @@ class FavListFragment : Fragment(R.layout.fragment_fav_list) {
                     when (viewState) {
                         is Resource.Success -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
-                            favRecipeAdapter.submitList(viewState.collection)
+                            favRecipes = viewState.collection.toMutableList()
+                            showHideEmptyList()
                         }
                         Resource.Error -> {
                             binding.loadingCircularProgressIndicator.visibility = View.GONE
@@ -66,9 +73,21 @@ class FavListFragment : Fragment(R.layout.fragment_fav_list) {
         binding.rvFavList.apply {
             favRecipeAdapter = FavRecipeAdapter { collection ->
                 favViewModel.setFavouriteRecipe(collection.id, collection.favourite.not())
+                favRecipes?.remove(collection)
+                favRecipeAdapter.refreshList(favRecipes)
+                showHideEmptyList()
             }
             adapter = favRecipeAdapter
             layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun showHideEmptyList() {
+        if(!favRecipes.isNullOrEmpty()) {
+            favRecipeAdapter.submitList(favRecipes)
+            binding.tvNoRecipe.hide()
+        }else{
+            binding.tvNoRecipe.show()
         }
     }
 
