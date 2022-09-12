@@ -3,7 +3,7 @@ package com.cookpad.hiring.android.ui.recipecollection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cookpad.hiring.android.data.Resource
-import com.cookpad.hiring.android.data.repository.CollectionListRepository
+import com.cookpad.hiring.android.domain.usecase.CollectionListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CollectionListViewModel @Inject constructor(private val repository: CollectionListRepository) :
+class CollectionListViewModel @Inject constructor(private val useCase: CollectionListUseCase) :
     ViewModel() {
 
     private val _viewState = MutableStateFlow<Resource>(Resource.Success(emptyList()))
@@ -31,7 +31,7 @@ class CollectionListViewModel @Inject constructor(private val repository: Collec
 
         viewModelScope.launch(Dispatchers.IO){
             runCatching {
-                repository.getCollectionList()
+                useCase.getCollectionList()
             }.onFailure {
                 _viewState.value = Resource.Error
             }.onSuccess { collection ->
