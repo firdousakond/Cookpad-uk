@@ -1,13 +1,10 @@
-package com.cookpad.hiring.android.ui.recipecollection
+package com.cookpad.hiring.android.ui.favouriterecipe
 
 import com.cookpad.hiring.android.data.Resource
 import com.cookpad.hiring.android.data.entities.Collection
-import com.cookpad.hiring.android.domain.usecase.CollectionListUseCase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
+import com.cookpad.hiring.android.domain.usecase.FavouriteRecipeUseCase
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -20,11 +17,11 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
-class CollectionListViewModelTest {
+class FavouriteRecipeViewModelTest {
 
     private val dispatcher = UnconfinedTestDispatcher()
-    private lateinit var collectionListViewModel: CollectionListViewModel
-    private val mockCollectionListUseCase: CollectionListUseCase = mock()
+    private lateinit var favouriteRecipeViewModel: FavRecipeViewModel
+    private val mockFavouriteRecipeUseCase: FavouriteRecipeUseCase = mock()
 
     @Before
     fun setUp() {
@@ -37,13 +34,13 @@ class CollectionListViewModelTest {
     }
 
     @Test
-    fun `Given collections are loaded When data source is success Then emit success view state`() {
+    fun `Given favourite recipes are loaded When local data source is success Then emit success view state`() {
         val expectedCollections = getCollections()
         runTest {
-            whenever(mockCollectionListUseCase.getCollectionList()).thenReturn(expectedCollections)
-            collectionListViewModel = CollectionListViewModel(mockCollectionListUseCase)
+            whenever(mockFavouriteRecipeUseCase.getFavouriteRecipe()).thenReturn(expectedCollections)
+            favouriteRecipeViewModel = FavRecipeViewModel(mockFavouriteRecipeUseCase)
             val job = launch {
-                collectionListViewModel.viewState.collectLatest {
+                favouriteRecipeViewModel.favViewState.collectLatest {
                     delay(2000)
                     assertEquals(it,  Resource.Success(expectedCollections))
                 }
@@ -53,13 +50,13 @@ class CollectionListViewModelTest {
     }
 
     @Test
-    fun `Given collections are loaded When data source is error Then emit error view state`() {
+    fun `Given favourite recipes are loaded When local data source is error Then emit error view state`() {
         runTest {
-            whenever(mockCollectionListUseCase.getCollectionList()).thenThrow(RuntimeException(""))
-            collectionListViewModel = CollectionListViewModel(mockCollectionListUseCase)
+            whenever(mockFavouriteRecipeUseCase.getFavouriteRecipe()).thenThrow(RuntimeException(""))
+            favouriteRecipeViewModel = FavRecipeViewModel(mockFavouriteRecipeUseCase)
 
             val job = launch {
-                collectionListViewModel.viewState.collectLatest {
+                favouriteRecipeViewModel.favViewState.collectLatest {
                     delay(2000)
                     assertEquals(it, Resource.Error)
                 }

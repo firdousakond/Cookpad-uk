@@ -5,7 +5,7 @@ import com.cookpad.hiring.android.data.room.RecipeDao
 import com.cookpad.hiring.android.domain.repository.IFavouriteRecipeRepo
 import javax.inject.Inject
 
-class FavCollectionRepository @Inject constructor(private val recipeDao: RecipeDao) :
+class FavouriteRecipeRepository @Inject constructor(private val recipeDao: RecipeDao) :
     IFavouriteRecipeRepo {
 
     override suspend fun setFavouriteRecipe(id: Int, isFavourite: Boolean): Int =

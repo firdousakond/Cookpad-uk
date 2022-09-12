@@ -1,7 +1,7 @@
 package com.cookpad.hiring.android.di
 
 import com.cookpad.hiring.android.data.repository.CollectionListRepository
-import com.cookpad.hiring.android.data.repository.FavCollectionRepository
+import com.cookpad.hiring.android.data.repository.FavouriteRecipeRepository
 import com.cookpad.hiring.android.domain.repository.ICollectionListRepo
 import com.cookpad.hiring.android.domain.repository.IFavouriteRecipeRepo
 import dagger.Binds
@@ -16,6 +16,6 @@ abstract class DomainModule {
     abstract fun bindCollectionListRepository(collectionListRepository: CollectionListRepository): ICollectionListRepo
 
     @Binds
-    abstract fun bindFavouriteRecipeRepository(favCollectionRepository: FavCollectionRepository): IFavouriteRecipeRepo
+    abstract fun bindFavouriteRecipeRepository(favouriteRecipeRepository: FavouriteRecipeRepository): IFavouriteRecipeRepo
 
 }
